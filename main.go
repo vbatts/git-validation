@@ -8,6 +8,7 @@ import (
 
 	"github.com/vbatts/git-validation/git"
 	_ "github.com/vbatts/git-validation/rules/dco"
+	_ "github.com/vbatts/git-validation/rules/shortsubject"
 	"github.com/vbatts/git-validation/validate"
 )
 
