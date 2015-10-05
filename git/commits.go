@@ -8,13 +8,19 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+
+	"github.com/Sirupsen/logrus"
 )
 
 // Commits returns a set of commits.
 // If commitrange is a git still range 12345...54321, then it will be isolated set of commits.
 // If commitrange is a single commit, all ancestor commits up through the hash provided.
 func Commits(commitrange string) ([]CommitEntry, error) {
-	output, err := exec.Command("git", "log", prettyFormat+formatCommit, commitrange).Output()
+	cmdArgs := []string{"git", "log", prettyFormat + formatCommit, commitrange}
+	if Verbose {
+		logrus.Infof("[git] cmd: %q", strings.Join(cmdArgs, " "))
+	}
+	output, err := exec.Command(cmdArgs[0], cmdArgs[1:]...).Output()
 	if err != nil {
 		return nil, err
 	}
@@ -34,6 +40,9 @@ func Commits(commitrange string) ([]CommitEntry, error) {
 type CommitEntry map[string]string
 
 var (
+	// Verbose output of commands run
+	Verbose = false
+
 	prettyFormat         = `--pretty=format:`
 	formatSubject        = `%s`
 	formatBody           = `%b`
@@ -50,7 +59,11 @@ var (
 // LogCommit assembles the full information on a commit from its commit hash
 func LogCommit(commit string) (*CommitEntry, error) {
 	buf := bytes.NewBuffer([]byte{})
-	cmd := exec.Command("git", "log", "-1", prettyFormat+formatMap, commit)
+	cmdArgs := []string{"git", "log", "-1", prettyFormat + formatMap, commit}
+	if Verbose {
+		logrus.Infof("[git] cmd: %q", strings.Join(cmdArgs, " "))
+	}
+	cmd := exec.Command(cmdArgs[0], cmdArgs[1:]...)
 	cmd.Stdout = buf
 	cmd.Stderr = os.Stderr
 
@@ -88,7 +101,11 @@ func LogCommit(commit string) (*CommitEntry, error) {
 
 // FetchHeadCommit returns the hash of FETCH_HEAD
 func FetchHeadCommit() (string, error) {
-	output, err := exec.Command("git", "rev-parse", "--verify", "FETCH_HEAD").Output()
+	cmdArgs := []string{"git", "rev-parse", "--verify", "FETCH_HEAD"}
+	if Verbose {
+		logrus.Infof("[git] cmd: %q", strings.Join(cmdArgs, " "))
+	}
+	output, err := exec.Command(cmdArgs[0], cmdArgs[1:]...).Output()
 	if err != nil {
 		return "", err
 	}
@@ -97,7 +114,11 @@ func FetchHeadCommit() (string, error) {
 
 // HeadCommit returns the hash of HEAD
 func HeadCommit() (string, error) {
-	output, err := exec.Command("git", "rev-parse", "--verify", "HEAD").Output()
+	cmdArgs := []string{"git", "rev-parse", "--verify", "HEAD"}
+	if Verbose {
+		logrus.Infof("[git] cmd: %q", strings.Join(cmdArgs, " "))
+	}
+	output, err := exec.Command(cmdArgs[0], cmdArgs[1:]...).Output()
 	if err != nil {
 		return "", err
 	}

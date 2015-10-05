@@ -21,6 +21,10 @@ var (
 func main() {
 	flag.Parse()
 
+	if *flVerbose {
+		git.Verbose = true
+	}
+
 	if *flListRules {
 		for _, r := range validate.RegisteredRules {
 			fmt.Printf("%q -- %s\n", r.Name, r.Description)
@@ -40,7 +44,10 @@ func main() {
 		var err error
 		commitrange, err = git.FetchHeadCommit()
 		if err != nil {
-			log.Fatal(err)
+			commitrange, err = git.HeadCommit()
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
 	}
 
@@ -56,20 +63,18 @@ func main() {
 		results = append(results, vr...)
 		if _, fail := vr.PassFail(); fail == 0 {
 			fmt.Println("PASS")
-			if *flVerbose {
-				for _, r := range vr {
-					if r.Pass {
-						fmt.Printf("  - %s\n", r.Msg)
-					}
-				}
-			}
 		} else {
 			fmt.Println("FAIL")
-			// default, only print out failed validations
-			for _, r := range vr {
-				if !r.Pass {
-					fmt.Printf("  - %s\n", r.Msg)
+		}
+		for _, r := range vr {
+			if *flVerbose {
+				if r.Pass {
+					fmt.Printf("ok %s\n", r.Msg)
+				} else {
+					fmt.Printf("not ok %s\n", r.Msg)
 				}
+			} else if !r.Pass {
+				fmt.Printf("not ok %s\n", r.Msg)
 			}
 		}
 	}
