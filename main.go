@@ -32,11 +32,13 @@ func main() {
 		return
 	}
 
+	// reduce the set being run
 	rules := validate.RegisteredRules
 	if *flRun != "" {
 		rules = validate.FilterRules(rules, validate.SanitizeFilters(*flRun))
 	}
 
+	// Guess the commits we're working with
 	var commitrange string
 	if *flCommitRange != "" {
 		commitrange = *flCommitRange
@@ -51,11 +53,13 @@ func main() {
 		}
 	}
 
+	// collect the entries
 	c, err := git.Commits(commitrange)
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	// run them and show results
 	results := validate.Results{}
 	for _, commit := range c {
 		fmt.Printf(" * %s %s ... ", commit["abbreviated_commit"], commit["subject"])

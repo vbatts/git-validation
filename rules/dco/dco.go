@@ -13,14 +13,17 @@ func init() {
 }
 
 var (
+	// ValidDCO is the regexp for signed off DCO
 	ValidDCO = regexp.MustCompile(`^Signed-off-by: ([^<]+) <([^<>@]+@[^<>]+)>$`)
-	DcoRule  = validate.Rule{
+	// DcoRule is the rule being registered
+	DcoRule = validate.Rule{
 		Name:        "DCO",
 		Description: "makes sure the commits are signed",
 		Run:         ValidateDCO,
 	}
 )
 
+// ValidateDCO is the ValidateRule for a git commit
 func ValidateDCO(c git.CommitEntry) (vr validate.Result) {
 	vr.CommitEntry = c
 	if len(strings.Split(c["parent"], " ")) > 1 {
