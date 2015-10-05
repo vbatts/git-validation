@@ -28,6 +28,11 @@ func main() {
 		return
 	}
 
+	rules := validate.RegisteredRules
+	if *flRun != "" {
+		rules = validate.FilterRules(rules, validate.SanitizeFilters(*flRun))
+	}
+
 	var commitrange string
 	if *flCommitRange != "" {
 		commitrange = *flCommitRange
@@ -47,7 +52,7 @@ func main() {
 	results := validate.Results{}
 	for _, commit := range c {
 		fmt.Printf(" * %s %s ... ", commit["abbreviated_commit"], commit["subject"])
-		vr := validate.Commit(commit, validate.RegisteredRules)
+		vr := validate.Commit(commit, rules)
 		results = append(results, vr...)
 		if _, fail := vr.PassFail(); fail == 0 {
 			fmt.Println("PASS")

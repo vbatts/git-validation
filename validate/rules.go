@@ -1,6 +1,10 @@
 package validate
 
-import "github.com/vbatts/git-validation/git"
+import (
+	"strings"
+
+	"github.com/vbatts/git-validation/git"
+)
 
 var (
 	// RegisteredRules are the standard validation to perform on git commits
@@ -48,4 +52,30 @@ func (vr Results) PassFail() (pass int, fail int) {
 		}
 	}
 	return pass, fail
+}
+
+// SanitizeFilters takes a comma delimited list and returns the cleaned items in the list
+func SanitizeFilters(filt string) (excludes []string) {
+
+	for _, item := range strings.Split(filt, ",") {
+		excludes = append(excludes, strings.TrimSpace(item))
+	}
+
+	return
+}
+
+// FilterRules takes a set of rules and a list of short names to exclude, and returns the reduced set.
+// The comparison is case insensitive.
+func FilterRules(rules []Rule, excludes []string) []Rule {
+	ret := []Rule{}
+
+	for _, r := range rules {
+		for _, e := range excludes {
+			if strings.ToLower(r.Name) == strings.ToLower(e) {
+				ret = append(ret, r)
+			}
+		}
+	}
+
+	return ret
 }
