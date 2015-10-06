@@ -17,7 +17,7 @@ import (
 // If commitrange is a single commit, all ancestor commits up through the hash provided.
 func Commits(commitrange string) ([]CommitEntry, error) {
 	cmdArgs := []string{"git", "log", prettyFormat + formatCommit, commitrange}
-	if Verbose {
+	if debug() {
 		logrus.Infof("[git] cmd: %q", strings.Join(cmdArgs, " "))
 	}
 	output, err := exec.Command(cmdArgs[0], cmdArgs[1:]...).Output()
@@ -40,9 +40,6 @@ func Commits(commitrange string) ([]CommitEntry, error) {
 type CommitEntry map[string]string
 
 var (
-	// Verbose output of commands run
-	Verbose = false
-
 	prettyFormat         = `--pretty=format:`
 	formatSubject        = `%s`
 	formatBody           = `%b`
@@ -60,7 +57,7 @@ var (
 func LogCommit(commit string) (*CommitEntry, error) {
 	buf := bytes.NewBuffer([]byte{})
 	cmdArgs := []string{"git", "log", "-1", prettyFormat + formatMap, commit}
-	if Verbose {
+	if debug() {
 		logrus.Infof("[git] cmd: %q", strings.Join(cmdArgs, " "))
 	}
 	cmd := exec.Command(cmdArgs[0], cmdArgs[1:]...)
@@ -99,10 +96,14 @@ func LogCommit(commit string) (*CommitEntry, error) {
 	return &c, nil
 }
 
+func debug() bool {
+	return len(os.Getenv("DEBUG")) > 0
+}
+
 // FetchHeadCommit returns the hash of FETCH_HEAD
 func FetchHeadCommit() (string, error) {
 	cmdArgs := []string{"git", "rev-parse", "--verify", "FETCH_HEAD"}
-	if Verbose {
+	if debug() {
 		logrus.Infof("[git] cmd: %q", strings.Join(cmdArgs, " "))
 	}
 	output, err := exec.Command(cmdArgs[0], cmdArgs[1:]...).Output()
@@ -115,7 +116,7 @@ func FetchHeadCommit() (string, error) {
 // HeadCommit returns the hash of HEAD
 func HeadCommit() (string, error) {
 	cmdArgs := []string{"git", "rev-parse", "--verify", "HEAD"}
-	if Verbose {
+	if debug() {
 		logrus.Infof("[git] cmd: %q", strings.Join(cmdArgs, " "))
 	}
 	output, err := exec.Command(cmdArgs[0], cmdArgs[1:]...).Output()
