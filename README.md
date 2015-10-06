@@ -83,3 +83,13 @@ vbatts@valse ~/src/vb/git-validation (master) $ git-validation
 vbatts@valse ~/src/vb/git-validation (master) $ echo $?
 1
 ```
+
+## Rules
+
+Default rules are added by registering them to the `validate` package.
+Usually by putting them in their own package.
+See [`./rules/`](./rules/).
+Feel free to contribute more.
+
+Otherwise, but using `validate` package API directly, rules can be handed directly to the `validate.Runner`.
+
