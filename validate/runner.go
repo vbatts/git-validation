@@ -70,10 +70,18 @@ func (r *Runner) Run() error {
 
 	// run them and show results
 	for _, commit := range c {
-		fmt.Printf(" * %s %q ... ", commit["abbreviated_commit"], commit["subject"])
+		if os.Getenv("QUIET") == "" {
+			fmt.Printf(" * %s %q ... ", commit["abbreviated_commit"], commit["subject"])
+		}
 		vr := Commit(commit, r.Rules)
 		r.Results = append(r.Results, vr...)
-		if _, fail := vr.PassFail(); fail == 0 {
+		_, fail := vr.PassFail()
+		if os.Getenv("QUIET") != "" {
+			// everything else in the loop is printing output.
+			// If we're quiet, then just continue
+			continue
+		}
+		if fail == 0 {
 			fmt.Println("PASS")
 		} else {
 			fmt.Println("FAIL")

@@ -17,6 +17,7 @@ var (
 	flRun         = flag.String("run", "", "comma delimited list of rules to run. Defaults to all.")
 	flVerbose     = flag.Bool("v", false, "verbose")
 	flDebug       = flag.Bool("D", false, "debug output")
+	flQuiet       = flag.Bool("q", false, "less output")
 	flDir         = flag.String("d", ".", "git directory to validate from")
 )
 
@@ -25,6 +26,9 @@ func main() {
 
 	if *flDebug {
 		os.Setenv("DEBUG", "1")
+	}
+	if *flQuiet {
+		os.Setenv("QUIET", "1")
 	}
 
 	if *flListRules {
