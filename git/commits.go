@@ -36,20 +36,46 @@ func Commits(commitrange string) ([]CommitEntry, error) {
 	return commits, nil
 }
 
-// CommitEntry represents a single commit's information from `git`
+// FieldNames are for the formating and rendering of the CommitEntry structs.
+// Keys here are from git log pretty format "format:..."
+var FieldNames = map[string]string{
+	"%h":  "abbreviated_commit",
+	"%p":  "abbreviated_parent",
+	"%t":  "abbreviated_tree",
+	"%aD": "author_date",
+	"%aE": "author_email",
+	"%aN": "author_name",
+	"%b":  "body",
+	"%H":  "commit",
+	"%N":  "commit_notes",
+	"%cD": "committer_date",
+	"%cE": "committer_email",
+	"%cN": "committer_name",
+	"%e":  "encoding",
+	"%P":  "parent",
+	"%D":  "refs",
+	"%f":  "sanitized_subject_line",
+	"%GS": "signer",
+	"%GK": "signer_key",
+	"%s":  "subject",
+	"%G?": "verification_flag",
+}
+
+// CommitEntry represents a single commit's information from `git`.
+// See also FieldNames
 type CommitEntry map[string]string
 
 var (
 	prettyFormat         = `--pretty=format:`
-	formatSubject        = `%s`
+	formatAuthorEmail    = `%aE`
+	formatAuthorName     = `%aN`
 	formatBody           = `%b`
 	formatCommit         = `%H`
-	formatAuthorName     = `%aN`
-	formatAuthorEmail    = `%aE`
-	formatCommitterName  = `%cN`
-	formatCommitterEmail = `%cE`
-	formatSigner         = `%GS`
 	formatCommitNotes    = `%N`
+	formatCommitterEmail = `%cE`
+	formatCommitterName  = `%cN`
+	formatSigner         = `%GS`
+	formatSubject        = `%s`
 	formatMap            = `{"commit": "%H", "abbreviated_commit": "%h", "tree": "%T", "abbreviated_tree": "%t", "parent": "%P", "abbreviated_parent": "%p", "refs": "%D", "encoding": "%e", "sanitized_subject_line": "%f", "verification_flag": "%G?", "signer_key": "%GK", "author_date": "%aD" , "committer_date": "%cD" }`
 )
 
