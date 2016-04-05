@@ -8,7 +8,7 @@ sudo: false
 before_install:
   - go get golang.org/x/tools/cmd/vet
   - go get -u github.com/golang/lint/golint
-  - mkdir -p $GOPATH/src/github.com/vbatts && ln -sf $(pwd) $GOPATH/src/github.com/vbatts/git-validation && go get ./...
+  - mkdir -p $GOPATH/src/github.com/vbatts && ln -sf $(pwd) $GOPATH/src/github.com/vbatts/git-validation && go get ./... && go install github.com/vbatts/git-validation
 
 install: true
 
@@ -17,4 +17,5 @@ script:
   - golint ./...
   - go build .
   - go test -v ./...
+  - git-validation -v -run short-subject,dangling-whitespace
 
