@@ -57,6 +57,19 @@ var FieldNames = map[string]string{
 	"%G?": "verification_flag",
 }
 
+// Show returns the diff of a commit.
+//
+// NOTE: This could be expensive for very large commits.
+func Show(commit string) ([]byte, error) {
+	cmd := exec.Command("git", "show", commit)
+	cmd.Stderr = os.Stderr
+	out, err := cmd.Output()
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CommitEntry represents a single commit's information from `git`.
 // See also FieldNames
 type CommitEntry map[string]string
