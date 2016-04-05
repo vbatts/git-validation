@@ -1,7 +1,6 @@
 package git
 
 import (
-	"bytes"
 	"os"
 	"os/exec"
 	"strings"
@@ -64,16 +63,15 @@ type CommitEntry map[string]string
 
 // LogCommit assembles the full information on a commit from its commit hash
 func LogCommit(commit string) (*CommitEntry, error) {
-	buf := bytes.NewBuffer([]byte{})
 	c := CommitEntry{}
 	for k, v := range FieldNames {
 		cmd := exec.Command("git", "log", "-1", `--pretty=format:`+k+``, commit)
-		cmd.Stdout = buf
 		cmd.Stderr = os.Stderr
-		if err := cmd.Run(); err != nil {
+		out, err := cmd.Output()
+		if err != nil {
 			return nil, err
 		}
-		c[v] = strings.TrimSpace(string(buf.Bytes()))
+		c[v] = strings.TrimSpace(string(out))
 	}
 
 	return &c, nil
