@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	_ "github.com/vbatts/git-validation/rules/dco"
 	_ "github.com/vbatts/git-validation/rules/shortsubject"
@@ -19,6 +20,7 @@ var (
 	flDebug       = flag.Bool("D", false, "debug output")
 	flQuiet       = flag.Bool("q", false, "less output")
 	flDir         = flag.String("d", ".", "git directory to validate from")
+	flNoTravis    = flag.Bool("no-travis", false, "disables travis environment checks (when env TRAVIS=true is set)")
 )
 
 func main() {
@@ -44,7 +46,16 @@ func main() {
 		rules = validate.FilterRules(rules, validate.SanitizeFilters(*flRun))
 	}
 
-	runner, err := validate.NewRunner(*flDir, rules, *flCommitRange, *flVerbose)
+	var commitRange = *flCommitRange
+	if strings.ToLower(os.Getenv("TRAVIS")) == "true" && !*flNoTravis {
+		if os.Getenv("TRAVIS_COMMIT_RANGE") != "" {
+			commitRange = os.Getenv("TRAVIS_COMMIT_RANGE")
+		} else if os.Getenv("TRAVIS_COMMIT") != "" {
+			commitRange = os.Getenv("TRAVIS_COMMIT")
+		}
+	}
+
+	runner, err := validate.NewRunner(*flDir, rules, commitRange, *flVerbose)
 	if err != nil {
 		log.Fatal(err)
 	}
