@@ -1,6 +1,6 @@
 # git-validation
 
-A way to do per git commit validation
+A way to do validation on git commits.
 
 ## install
 
@@ -26,14 +26,14 @@ Usage of git-validation:
   -v    verbose
 ```
 
-The default rule set are all run by default:
+The entire default rule set is run by default:
 ```bash
 vbatts@valse ~/src/vb/git-validation (master) $ git-validation -list-rules
 "DCO" -- makes sure the commits are signed
 "short-subject" -- commit subjects are strictly less than 90 (github ellipsis length)
 ```
 
-Comma delimited rules to run:
+Or, specify comma-delimited rules to run:
 ```bash
 vbatts@valse ~/src/vb/git-validation (master) $ git-validation -run DCO,short-subject
  * b243ca4 "README: adding install and usage" ... PASS
@@ -91,5 +91,5 @@ Usually by putting them in their own package.
 See [`./rules/`](./rules/).
 Feel free to contribute more.
 
-Otherwise, but using `validate` package API directly, rules can be handed directly to the `validate.Runner`.
+Otherwise, by using `validate` package API directly, rules can be handed directly to the `validate.Runner`.
 

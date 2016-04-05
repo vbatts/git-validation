@@ -19,7 +19,7 @@ func init() {
 }
 
 // ValidateShortSubject checks that the commit's subject is strictly less than
-// 90 characters (preferrably not more than 72 chars).
+// 90 characters (preferably not more than 72 chars).
 func ValidateShortSubject(c git.CommitEntry) (vr validate.Result) {
 	if len(c["subject"]) >= 90 {
 		vr.Pass = false
@@ -28,7 +28,7 @@ func ValidateShortSubject(c git.CommitEntry) (vr validate.Result) {
 	}
 	vr.Pass = true
 	if len(c["subject"]) > 72 {
-		vr.Msg = "commit subject is not more than 90 characters, but is still more than 72 chars"
+		vr.Msg = "commit subject is under 90 characters, but is still more than 72 chars"
 	} else {
 		vr.Msg = "commit subject is 72 characters or less! *yay*"
 	}
