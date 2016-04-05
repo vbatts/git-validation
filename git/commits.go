@@ -2,9 +2,6 @@ package git
 
 import (
 	"bytes"
-	"encoding/json"
-	"fmt"
-	"log"
 	"os"
 	"os/exec"
 	"strings"
@@ -16,7 +13,7 @@ import (
 // If commitrange is a git still range 12345...54321, then it will be isolated set of commits.
 // If commitrange is a single commit, all ancestor commits up through the hash provided.
 func Commits(commitrange string) ([]CommitEntry, error) {
-	cmdArgs := []string{"git", "log", prettyFormat + formatCommit, commitrange}
+	cmdArgs := []string{"git", "log", `--pretty=format:%H`, commitrange}
 	if debug() {
 		logrus.Infof("[git] cmd: %q", strings.Join(cmdArgs, " "))
 	}
@@ -36,61 +33,47 @@ func Commits(commitrange string) ([]CommitEntry, error) {
 	return commits, nil
 }
 
-// CommitEntry represents a single commit's information from `git`
-type CommitEntry map[string]string
+// FieldNames are for the formating and rendering of the CommitEntry structs.
+// Keys here are from git log pretty format "format:..."
+var FieldNames = map[string]string{
+	"%h":  "abbreviated_commit",
+	"%p":  "abbreviated_parent",
+	"%t":  "abbreviated_tree",
+	"%aD": "author_date",
+	"%aE": "author_email",
+	"%aN": "author_name",
+	"%b":  "body",
+	"%H":  "commit",
+	"%N":  "commit_notes",
+	"%cD": "committer_date",
+	"%cE": "committer_email",
+	"%cN": "committer_name",
+	"%e":  "encoding",
+	"%P":  "parent",
+	"%D":  "refs",
+	"%f":  "sanitized_subject_line",
+	"%GS": "signer",
+	"%GK": "signer_key",
+	"%s":  "subject",
+	"%G?": "verification_flag",
+}
 
-var (
-	prettyFormat         = `--pretty=format:`
-	formatSubject        = `%s`
-	formatBody           = `%b`
-	formatCommit         = `%H`
-	formatAuthorName     = `%aN`
-	formatAuthorEmail    = `%aE`
-	formatCommitterName  = `%cN`
-	formatCommitterEmail = `%cE`
-	formatSigner         = `%GS`
-	formatCommitNotes    = `%N`
-	formatMap            = `{"commit": "%H", "abbreviated_commit": "%h", "tree": "%T", "abbreviated_tree": "%t", "parent": "%P", "abbreviated_parent": "%p", "refs": "%D", "encoding": "%e", "sanitized_subject_line": "%f", "verification_flag": "%G?", "signer_key": "%GK", "author_date": "%aD" , "committer_date": "%cD" }`
-)
+// CommitEntry represents a single commit's information from `git`.
+// See also FieldNames
+type CommitEntry map[string]string
 
 // LogCommit assembles the full information on a commit from its commit hash
 func LogCommit(commit string) (*CommitEntry, error) {
 	buf := bytes.NewBuffer([]byte{})
-	cmdArgs := []string{"git", "log", "-1", prettyFormat + formatMap, commit}
-	if debug() {
-		logrus.Infof("[git] cmd: %q", strings.Join(cmdArgs, " "))
-	}
-	cmd := exec.Command(cmdArgs[0], cmdArgs[1:]...)
-	cmd.Stdout = buf
-	cmd.Stderr = os.Stderr
-
-	if err := cmd.Run(); err != nil {
-		log.Println(strings.Join(cmd.Args, " "))
-		return nil, err
-	}
 	c := CommitEntry{}
-	output := buf.Bytes()
-	if err := json.Unmarshal(output, &c); err != nil {
-		fmt.Println(string(output))
-		return nil, err
-	}
-
-	// any user provided fields can't be sanitized for the mock-json marshal above
-	for k, v := range map[string]string{
-		"subject":         formatSubject,
-		"body":            formatBody,
-		"author_name":     formatAuthorName,
-		"author_email":    formatAuthorEmail,
-		"committer_name":  formatCommitterName,
-		"committer_email": formatCommitterEmail,
-		"commit_notes":    formatCommitNotes,
-		"signer":          formatSigner,
-	} {
-		output, err := exec.Command("git", "log", "-1", prettyFormat+v, commit).Output()
-		if err != nil {
+	for k, v := range FieldNames {
+		cmd := exec.Command("git", "log", "-1", `--pretty=format:`+k+``, commit)
+		cmd.Stdout = buf
+		cmd.Stderr = os.Stderr
+		if err := cmd.Run(); err != nil {
 			return nil, err
 		}
-		c[k] = strings.TrimSpace(string(output))
+		c[v] = strings.TrimSpace(string(buf.Bytes()))
 	}
 
 	return &c, nil
