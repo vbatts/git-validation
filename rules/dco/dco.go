@@ -23,7 +23,7 @@ var (
 	}
 )
 
-// ValidateDCO is the ValidateRule for a git commit
+// ValidateDCO checks that the commit has been signed off, per the DCO process
 func ValidateDCO(c git.CommitEntry) (vr validate.Result) {
 	vr.CommitEntry = c
 	if len(strings.Split(c["parent"], " ")) > 1 {
