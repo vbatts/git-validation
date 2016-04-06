@@ -60,7 +60,10 @@ var FieldNames = map[string]string{
 // Check warns if changes introduce whitespace errors.
 // Returns non-zero if any issues are found.
 func Check(commit string) ([]byte, error) {
-	cmd := exec.Command("git", "show", "--check", commit)
+	cmd := exec.Command("git", "--no-pager", "show", "--check", commit)
+	if debug() {
+		logrus.Infof("[git] cmd: %q", strings.Join(cmd.Args, " "))
+	}
 	cmd.Stderr = os.Stderr
 	return cmd.Output()
 }
@@ -69,7 +72,10 @@ func Check(commit string) ([]byte, error) {
 //
 // NOTE: This could be expensive for very large commits.
 func Show(commit string) ([]byte, error) {
-	cmd := exec.Command("git", "show", commit)
+	cmd := exec.Command("git", "--no-pager", "show", commit)
+	if debug() {
+		logrus.Infof("[git] cmd: %q", strings.Join(cmd.Args, " "))
+	}
 	cmd.Stderr = os.Stderr
 	return cmd.Output()
 }
@@ -82,7 +88,10 @@ type CommitEntry map[string]string
 func LogCommit(commit string) (*CommitEntry, error) {
 	c := CommitEntry{}
 	for k, v := range FieldNames {
-		cmd := exec.Command("git", "log", "-1", `--pretty=format:`+k+``, commit)
+		cmd := exec.Command("git", "--no-pager", "log", "-1", `--pretty=format:`+k+``, commit)
+		if debug() {
+			logrus.Infof("[git] cmd: %q", strings.Join(cmd.Args, " "))
+		}
 		cmd.Stderr = os.Stderr
 		out, err := cmd.Output()
 		if err != nil {
@@ -100,7 +109,7 @@ func debug() bool {
 
 // FetchHeadCommit returns the hash of FETCH_HEAD
 func FetchHeadCommit() (string, error) {
-	cmdArgs := []string{"git", "rev-parse", "--verify", "FETCH_HEAD"}
+	cmdArgs := []string{"git", "--no-pager", "rev-parse", "--verify", "FETCH_HEAD"}
 	if debug() {
 		logrus.Infof("[git] cmd: %q", strings.Join(cmdArgs, " "))
 	}
@@ -113,7 +122,7 @@ func FetchHeadCommit() (string, error) {
 
 // HeadCommit returns the hash of HEAD
 func HeadCommit() (string, error) {
-	cmdArgs := []string{"git", "rev-parse", "--verify", "HEAD"}
+	cmdArgs := []string{"git", "--no-pager", "rev-parse", "--verify", "HEAD"}
 	if debug() {
 		logrus.Infof("[git] cmd: %q", strings.Join(cmdArgs, " "))
 	}
