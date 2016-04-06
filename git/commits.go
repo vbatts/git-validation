@@ -57,17 +57,21 @@ var FieldNames = map[string]string{
 	"%G?": "verification_flag",
 }
 
+// Check warns if changes introduce whitespace errors.
+// Returns non-zero if any issues are found.
+func Check(commit string) ([]byte, error) {
+	cmd := exec.Command("git", "show", "--check", commit)
+	cmd.Stderr = os.Stderr
+	return cmd.Output()
+}
+
 // Show returns the diff of a commit.
 //
 // NOTE: This could be expensive for very large commits.
 func Show(commit string) ([]byte, error) {
 	cmd := exec.Command("git", "show", commit)
 	cmd.Stderr = os.Stderr
-	out, err := cmd.Output()
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
+	return cmd.Output()
 }
 
 // CommitEntry represents a single commit's information from `git`.

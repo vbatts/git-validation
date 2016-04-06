@@ -1,9 +1,6 @@
 package danglingwhitespace
 
 import (
-	"bytes"
-	"fmt"
-
 	"github.com/vbatts/git-validation/git"
 	"github.com/vbatts/git-validation/validate"
 )
@@ -23,27 +20,18 @@ func init() {
 }
 
 func ValidateDanglingWhitespace(c git.CommitEntry) (vr validate.Result) {
-	diff, err := git.Show(c["commit"])
-	if err != nil {
-		return validate.Result{Pass: false, Msg: err.Error(), CommitEntry: c}
-	}
-
 	vr.CommitEntry = c
+	vr.Msg = "commit does not have any whitespace errors"
 	vr.Pass = true
-	for _, line := range bytes.Split(diff, newLine) {
-		if !bytes.HasPrefix(line, diffAddLine) || bytes.Equal(line, diffAddLine) {
-			continue
-		}
-		if len(bytes.TrimSpace(line)) != len(line) {
-			vr.Pass = false
-			vr.Msg = fmt.Sprintf("line %q has trailiing spaces", string(line))
+
+	_, err := git.Check(c["commit"])
+	if err != nil {
+		vr.Pass = false
+		if err.Error() == "exit status 2" {
+			vr.Msg = "has whitespace errors. See `git show --check " + c["commit"] + "`."
+		} else {
+			vr.Msg = "errored with: " + err.Error()
 		}
 	}
-	vr.Msg = "all added diff lines do not have trailing spaces"
 	return
 }
-
-var (
-	newLine     = []byte("\n")
-	diffAddLine = []byte("+ ")
-)
