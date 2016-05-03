@@ -77,6 +77,13 @@ func (r *Runner) Run() error {
 		r.Results = append(r.Results, vr...)
 		_, fail := vr.PassFail()
 		if os.Getenv("QUIET") != "" {
+			if fail != 0 {
+				for _, res := range vr {
+					if !res.Pass {
+						fmt.Printf(" %s - FAIL - %s\n", commit["abbreviated_commit"], res.Msg)
+					}
+				}
+			}
 			// everything else in the loop is printing output.
 			// If we're quiet, then just continue
 			continue
