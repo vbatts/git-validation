@@ -66,7 +66,7 @@ func main() {
 	}
 	_, fail := runner.Results.PassFail()
 	if fail > 0 {
-		fmt.Printf("%d issues to fix\n", fail)
+		fmt.Printf("%d commits to fix\n", fail)
 		os.Exit(1)
 	}
 
