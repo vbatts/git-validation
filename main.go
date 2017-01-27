@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	flCommitRange = flag.String("range", "", "use this commit range instead")
+	flCommitRange = flag.String("range", "", "use this commit range instead (implies -no-travis)")
 	flListRules   = flag.Bool("list-rules", false, "list the rules registered")
 	flRun         = flag.String("run", "", "comma delimited list of rules to run. Defaults to all.")
 	flVerbose     = flag.Bool("v", false, "verbose")
@@ -48,11 +48,13 @@ func main() {
 	}
 
 	var commitRange = *flCommitRange
-	if strings.ToLower(os.Getenv("TRAVIS")) == "true" && !*flNoTravis {
-		if os.Getenv("TRAVIS_COMMIT_RANGE") != "" {
-			commitRange = os.Getenv("TRAVIS_COMMIT_RANGE")
-		} else if os.Getenv("TRAVIS_COMMIT") != "" {
-			commitRange = os.Getenv("TRAVIS_COMMIT")
+	if commitRange == "" {
+		if strings.ToLower(os.Getenv("TRAVIS")) == "true" && !*flNoTravis {
+			if os.Getenv("TRAVIS_COMMIT_RANGE") != "" {
+				commitRange = os.Getenv("TRAVIS_COMMIT_RANGE")
+			} else if os.Getenv("TRAVIS_COMMIT") != "" {
+				commitRange = os.Getenv("TRAVIS_COMMIT")
+			}
 		}
 	}
 
