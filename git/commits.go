@@ -12,7 +12,7 @@ import (
 // If commitrange is a git still range 12345...54321, then it will be isolated set of commits.
 // If commitrange is a single commit, all ancestor commits up through the hash provided.
 func Commits(commitrange string) ([]CommitEntry, error) {
-	cmdArgs := []string{"git", "--no-pager", "log", `--no-merges`, `--pretty=format:%H`, commitrange}
+	cmdArgs := []string{"git", "--no-pager", "log", `--pretty=format:%H`, commitrange}
 	if debug() {
 		logrus.Infof("[git] cmd: %q", strings.Join(cmdArgs, " "))
 	}
