@@ -51,7 +51,7 @@ func main() {
 	if commitRange == "" {
 		if strings.ToLower(os.Getenv("TRAVIS")) == "true" && !*flNoTravis {
 			if os.Getenv("TRAVIS_COMMIT_RANGE") != "" {
-				commitRange = strings.Replace("...", "..", os.Getenv("TRAVIS_COMMIT_RANGE"), 1)
+				commitRange = strings.Replace(os.Getenv("TRAVIS_COMMIT_RANGE"), "...", "..", 1)
 			} else if os.Getenv("TRAVIS_COMMIT") != "" {
 				commitRange = os.Getenv("TRAVIS_COMMIT")
 			}
