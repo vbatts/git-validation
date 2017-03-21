@@ -18,6 +18,7 @@ func Commits(commitrange string) ([]CommitEntry, error) {
 	}
 	output, err := exec.Command(cmdArgs[0], cmdArgs[1:]...).Output()
 	if err != nil {
+		logrus.Errorf("mm[git] cmd: %q", strings.Join(cmdArgs, " "))
 		return nil, err
 	}
 	commitHashes := strings.Split(strings.TrimSpace(string(output)), "\n")
@@ -95,6 +96,7 @@ func LogCommit(commit string) (*CommitEntry, error) {
 		cmd.Stderr = os.Stderr
 		out, err := cmd.Output()
 		if err != nil {
+			logrus.Errorf("[git] cmd: %q", strings.Join(cmd.Args, " "))
 			return nil, err
 		}
 		c[v] = strings.TrimSpace(string(out))
@@ -115,6 +117,7 @@ func FetchHeadCommit() (string, error) {
 	}
 	output, err := exec.Command(cmdArgs[0], cmdArgs[1:]...).Output()
 	if err != nil {
+		logrus.Errorf("[git] cmd: %q", strings.Join(cmdArgs, " "))
 		return "", err
 	}
 	return strings.TrimSpace(string(output)), nil
@@ -128,6 +131,7 @@ func HeadCommit() (string, error) {
 	}
 	output, err := exec.Command(cmdArgs[0], cmdArgs[1:]...).Output()
 	if err != nil {
+		logrus.Errorf("[git] cmd: %q", strings.Join(cmdArgs, " "))
 		return "", err
 	}
 	return strings.TrimSpace(string(output)), nil
