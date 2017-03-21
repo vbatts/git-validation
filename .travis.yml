@@ -11,6 +11,7 @@ before_install:
   - mkdir -p $GOPATH/src/github.com/vbatts && ln -sf $(pwd) $GOPATH/src/github.com/vbatts/git-validation && go get ./...
 
 before_script:
+  - echo $TRAVIS_COMMIT_RANGE
   - echo $TRAVIS_COMMIT
   - echo $TRAVIS_BRANCH
   - echo $TRAVIS_TAG
