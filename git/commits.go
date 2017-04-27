@@ -1,6 +1,7 @@
 package git
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 	"strings"
@@ -61,7 +62,14 @@ var FieldNames = map[string]string{
 // Check warns if changes introduce whitespace errors.
 // Returns non-zero if any issues are found.
 func Check(commit string) ([]byte, error) {
-	cmd := exec.Command("git", "--no-pager", "show", "--check", commit)
+	args := []string{
+		"--no-pager", "log", "--check",
+		fmt.Sprintf("%s^..%s", commit, commit),
+	}
+	if exclude := os.Getenv("GIT_CHECK_EXCLUDE"); exclude != "" {
+		args = append(args, "--", ".", fmt.Sprintf(":(exclude)%s", exclude))
+	}
+	cmd := exec.Command("git", args...)
 	if debug() {
 		logrus.Infof("[git] cmd: %q", strings.Join(cmd.Args, " "))
 	}
