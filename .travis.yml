@@ -1,8 +1,10 @@
 language: go
 go:
   - tip
-  - 1.7
-  - 1.6
+  - 1.x
+  - 1.8.x
+  - 1.7.x
+  - 1.6.x
 
 sudo: false
 
@@ -12,12 +14,6 @@ before_install:
 
 before_script:
   - env
-  - echo $TRAVIS_COMMIT_RANGE
-  - echo $TRAVIS_COMMIT
-  - echo $TRAVIS_BRANCH
-  - echo $TRAVIS_TAG
-  - echo $TRAVIS_BUILD_NUMBER
-  - echo $TRAVIS_REPO_SLUG
 
 install: true
 
