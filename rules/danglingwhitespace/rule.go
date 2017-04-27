@@ -19,6 +19,7 @@ func init() {
 	validate.RegisterRule(DanglingWhitespace)
 }
 
+// ValidateDanglingWhitespace runs Git's check to look for whitespace errors.
 func ValidateDanglingWhitespace(c git.CommitEntry) (vr validate.Result) {
 	vr.CommitEntry = c
 	vr.Msg = "commit does not have any whitespace errors"
