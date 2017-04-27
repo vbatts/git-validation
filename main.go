@@ -14,14 +14,15 @@ import (
 )
 
 var (
-	flCommitRange = flag.String("range", "", "use this commit range instead (implies -no-travis)")
-	flListRules   = flag.Bool("list-rules", false, "list the rules registered")
-	flRun         = flag.String("run", "", "comma delimited list of rules to run. Defaults to all.")
-	flVerbose     = flag.Bool("v", false, "verbose")
-	flDebug       = flag.Bool("D", false, "debug output")
-	flQuiet       = flag.Bool("q", false, "less output")
-	flDir         = flag.String("d", ".", "git directory to validate from")
-	flNoTravis    = flag.Bool("no-travis", false, "disables travis environment checks (when env TRAVIS=true is set)")
+	flCommitRange  = flag.String("range", "", "use this commit range instead (implies -no-travis)")
+	flListRules    = flag.Bool("list-rules", false, "list the rules registered")
+	flRun          = flag.String("run", "", "comma delimited list of rules to run. Defaults to all.")
+	flVerbose      = flag.Bool("v", false, "verbose")
+	flDebug        = flag.Bool("D", false, "debug output")
+	flQuiet        = flag.Bool("q", false, "less output")
+	flDir          = flag.String("d", ".", "git directory to validate from")
+	flNoTravis     = flag.Bool("no-travis", false, "disables travis environment checks (when env TRAVIS=true is set)")
+	flTravisPROnly = flag.Bool("travis-pr-only", true, "when on travis, only run validations if the CI-Build is checking pull-request build")
 )
 
 func main() {
@@ -38,6 +39,11 @@ func main() {
 		for _, r := range validate.RegisteredRules {
 			fmt.Printf("%q -- %s\n", r.Name, r.Description)
 		}
+		return
+	}
+
+	if *flTravisPROnly && strings.ToLower(os.Getenv("TRAVIS_PULL_REQUEST")) == "false" {
+		fmt.Printf("only to check travis PR builds and this not a PR build. yielding.\n")
 		return
 	}
 
