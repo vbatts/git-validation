@@ -5,14 +5,14 @@ A way to do validation on git commits.
 
 ## install
 
-```bash
+```console
 vbatts@valse ~ (master) $ go get -u github.com/vbatts/git-validation
 ```
 
 ## usage
 
 The flags
-```bash
+```console
 vbatts@valse ~/src/vb/git-validation (master *) $ git-validation -h
 Usage of git-validation:
   -D    debug output
@@ -28,14 +28,14 @@ Usage of git-validation:
 ```
 
 The entire default rule set is run by default:
-```bash
+```console
 vbatts@valse ~/src/vb/git-validation (master) $ git-validation -list-rules
 "DCO" -- makes sure the commits are signed
 "short-subject" -- commit subjects are strictly less than 90 (github ellipsis length)
 ```
 
 Or, specify comma-delimited rules to run:
-```bash
+```console
 vbatts@valse ~/src/vb/git-validation (master) $ git-validation -run DCO,short-subject
  * b243ca4 "README: adding install and usage" ... PASS
  * d614ccf "*: run tests in a runner" ... PASS
@@ -47,7 +47,7 @@ vbatts@valse ~/src/vb/git-validation (master) $ git-validation -run DCO,short-su
 ```
 
 Verbosity shows each rule's output:
-```bash
+```console
 vbatts@valse ~/src/vb/git-validation (master) $ git-validation -v
  * d614ccf "*: run tests in a runner" ... PASS
   - PASS - has a valid DCO
@@ -70,7 +70,7 @@ vbatts@valse ~/src/vb/git-validation (master) $ git-validation -v
 ```
 
 Here's a failure:
-```bash
+```console
 vbatts@valse ~/src/vb/git-validation (master) $ git-validation 
  * 49f51a8 "README: adding install and usage" ... FAIL
   - FAIL - does not have a valid DCO
@@ -84,6 +84,13 @@ vbatts@valse ~/src/vb/git-validation (master) $ git-validation
 vbatts@valse ~/src/vb/git-validation (master) $ echo $?
 1
 ```
+
+Excluding paths that are out of the scope of your project:
+```console
+vbatts@valse ~/src/vb/git-validation (master) $ GIT_CHECK_EXCLUDE="./vendor" git-validation -q -run dangling-whitespace
+...
+```
+using the `GIT_CHECK_EXCLUDE` environment variable
 
 ## Rules
 
