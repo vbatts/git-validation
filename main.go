@@ -9,6 +9,7 @@ import (
 
 	_ "github.com/vbatts/git-validation/rules/danglingwhitespace"
 	_ "github.com/vbatts/git-validation/rules/dco"
+	_ "github.com/vbatts/git-validation/rules/messageregexp"
 	_ "github.com/vbatts/git-validation/rules/shortsubject"
 	"github.com/vbatts/git-validation/validate"
 )
@@ -47,10 +48,20 @@ func main() {
 		return
 	}
 
-	// reduce the set being run
-	rules := validate.RegisteredRules
+	// rules to be used
+	var rules []validate.Rule
+	for _, r := range validate.RegisteredRules {
+		// only those that are Default
+		if r.Default {
+			rules = append(rules, r)
+		}
+	}
+	// or reduce the set being run to what the user provided
 	if *flRun != "" {
-		rules = validate.FilterRules(rules, validate.SanitizeFilters(*flRun))
+		rules = validate.FilterRules(validate.RegisteredRules, validate.SanitizeFilters(*flRun))
+	}
+	if os.Getenv("DEBUG") != "" {
+		log.Printf("%#v", rules) // XXX maybe reduce this list
 	}
 
 	var commitRange = *flCommitRange

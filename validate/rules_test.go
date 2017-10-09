@@ -46,7 +46,7 @@ func TestSliceHelpers(t *testing.T) {
 	for i := range set {
 		got := StringsSliceEqual(set[i].A, set[i].B)
 		if got != set[i].Equal {
-			t.Errorf("expected %d A and B comparison to be %q, but got %q", i, set[i].Equal, got)
+			t.Errorf("expected %d A and B comparison to be %t, but got %t", i, set[i].Equal, got)
 		}
 	}
 }

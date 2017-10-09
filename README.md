@@ -30,7 +30,9 @@ Usage of git-validation:
 The entire default rule set is run by default:
 ```console
 vbatts@valse ~/src/vb/git-validation (master) $ git-validation -list-rules
+"dangling-whitespace" -- checking the presence of dangling whitespaces on line endings
 "DCO" -- makes sure the commits are signed
+"message_regexp" -- checks the commit message for a user provided regular expression
 "short-subject" -- commit subjects are strictly less than 90 (github ellipsis length)
 ```
 
@@ -91,6 +93,7 @@ vbatts@valse ~/src/vb/git-validation (master) $ GIT_CHECK_EXCLUDE="./vendor" git
 ...
 ```
 using the `GIT_CHECK_EXCLUDE` environment variable
+
 
 ## Rules
 

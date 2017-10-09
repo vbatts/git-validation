@@ -20,11 +20,12 @@ var (
 		Name:        "DCO",
 		Description: "makes sure the commits are signed",
 		Run:         ValidateDCO,
+		Default:     true,
 	}
 )
 
 // ValidateDCO checks that the commit has been signed off, per the DCO process
-func ValidateDCO(c git.CommitEntry) (vr validate.Result) {
+func ValidateDCO(r validate.Rule, c git.CommitEntry) (vr validate.Result) {
 	vr.CommitEntry = c
 	if len(strings.Split(c["parent"], " ")) > 1 {
 		vr.Pass = true

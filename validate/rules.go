@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	// RegisteredRules are the standard validation to perform on git commits
+	// RegisteredRules are the avaible validation to perform on git commits
 	RegisteredRules  = []Rule{}
 	registerRuleLock = sync.Mutex{}
 )
@@ -26,14 +26,15 @@ type Rule struct {
 	Name        string // short name for reference in in the `-run=...` flag
 	Value       string // value to configure for the rule (i.e. a regexp to check for in the commit message)
 	Description string // longer Description for readability
-	Run         func(git.CommitEntry) Result
+	Run         func(Rule, git.CommitEntry) Result
+	Default     bool // whether the registered rule is run by default
 }
 
 // Commit processes the given rules on the provided commit, and returns the result set.
 func Commit(c git.CommitEntry, rules []Rule) Results {
 	results := Results{}
 	for _, r := range rules {
-		results = append(results, r.Run(c))
+		results = append(results, r.Run(r, c))
 	}
 	return results
 }
