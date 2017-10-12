@@ -11,6 +11,7 @@ var (
 		Name:        "short-subject",
 		Description: "commit subjects are strictly less than 90 (github ellipsis length)",
 		Run:         ValidateShortSubject,
+		Default:     true,
 	}
 )
 
@@ -20,7 +21,7 @@ func init() {
 
 // ValidateShortSubject checks that the commit's subject is strictly less than
 // 90 characters (preferably not more than 72 chars).
-func ValidateShortSubject(c git.CommitEntry) (vr validate.Result) {
+func ValidateShortSubject(r validate.Rule, c git.CommitEntry) (vr validate.Result) {
 	if len(c["subject"]) >= 90 {
 		vr.Pass = false
 		vr.Msg = "commit subject exceeds 90 characters"

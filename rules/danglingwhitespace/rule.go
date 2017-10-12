@@ -12,6 +12,7 @@ var (
 		Name:        "dangling-whitespace",
 		Description: "checking the presence of dangling whitespaces on line endings",
 		Run:         ValidateDanglingWhitespace,
+		Default:     true,
 	}
 )
 
@@ -20,7 +21,7 @@ func init() {
 }
 
 // ValidateDanglingWhitespace runs Git's check to look for whitespace errors.
-func ValidateDanglingWhitespace(c git.CommitEntry) (vr validate.Result) {
+func ValidateDanglingWhitespace(r validate.Rule, c git.CommitEntry) (vr validate.Result) {
 	vr.CommitEntry = c
 	vr.Msg = "commit does not have any whitespace errors"
 	vr.Pass = true
