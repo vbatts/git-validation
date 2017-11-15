@@ -1,6 +1,8 @@
 package shortsubject
 
 import (
+	"strings"
+
 	"github.com/vbatts/git-validation/git"
 	"github.com/vbatts/git-validation/validate"
 )
@@ -22,6 +24,11 @@ func init() {
 // ValidateShortSubject checks that the commit's subject is strictly less than
 // 90 characters (preferably not more than 72 chars).
 func ValidateShortSubject(r validate.Rule, c git.CommitEntry) (vr validate.Result) {
+	if len(strings.Split(c["parent"], " ")) > 1 {
+		vr.Pass = true
+		vr.Msg = "merge commits do not require length check"
+		return vr
+	}
 	if len(c["subject"]) >= 90 {
 		vr.Pass = false
 		vr.Msg = "commit subject exceeds 90 characters"
