@@ -66,8 +66,11 @@ func Check(commit string) ([]byte, error) {
 		"--no-pager", "log", "--check",
 		fmt.Sprintf("%s^..%s", commit, commit),
 	}
-	if exclude := os.Getenv("GIT_CHECK_EXCLUDE"); exclude != "" {
-		args = append(args, "--", ".", fmt.Sprintf(":(exclude)%s", exclude))
+	if excludeEnvList := os.Getenv("GIT_CHECK_EXCLUDE"); excludeEnvList != "" {
+		excludeList := strings.Split(excludeEnvList, ":")
+		for _, exclude := range excludeList {
+			args = append(args, "--", ".", fmt.Sprintf(":(exclude)%s", exclude))
+		}
 	}
 	cmd := exec.Command("git", args...)
 	if debug() {
