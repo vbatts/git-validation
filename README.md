@@ -89,10 +89,10 @@ vbatts@valse ~/src/vb/git-validation (master) $ echo $?
 
 Excluding paths that are out of the scope of your project:
 ```console
-vbatts@valse ~/src/vb/git-validation (master) $ GIT_CHECK_EXCLUDE="./vendor" git-validation -q -run dangling-whitespace
+vbatts@valse ~/src/vb/git-validation (master) $ GIT_CHECK_EXCLUDE="./vendor:./git/testdata" git-validation -q -run dangling-whitespace
 ...
 ```
-using the `GIT_CHECK_EXCLUDE` environment variable
+using the `GIT_CHECK_EXCLUDE` environment variable. Multiple paths should be separated by colon(`:`)
 
 
 ## Rules
