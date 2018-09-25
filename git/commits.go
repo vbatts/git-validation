@@ -6,6 +6,7 @@ import (
 	"os/exec"
 	"strings"
 
+	version "github.com/hashicorp/go-version"
 	"github.com/sirupsen/logrus"
 )
 
@@ -59,6 +60,35 @@ var FieldNames = map[string]string{
 	"%G?": "verification_flag",
 }
 
+func gitVersion() (string, error) {
+	cmd := exec.Command("git", "version")
+	cmd.Stderr = os.Stderr
+	buf, err := cmd.Output()
+	if err != nil {
+		return "", err
+	}
+	return strings.Fields(string(buf))[2], nil
+}
+
+// https://github.com/vbatts/git-validation/issues/37
+var versionWithExcludes = "1.9.5"
+
+func gitVersionNewerThan(otherV string) (bool, error) {
+	gv, err := gitVersion()
+	if err != nil {
+		return false, err
+	}
+	v1, err := version.NewVersion(gv)
+	if err != nil {
+		return false, err
+	}
+	v2, err := version.NewVersion(otherV)
+	if err != nil {
+		return false, err
+	}
+	return v2.Equal(v1) || v2.LessThan(v1), nil
+}
+
 // Check warns if changes introduce whitespace errors.
 // Returns non-zero if any issues are found.
 func Check(commit string) ([]byte, error) {
@@ -67,9 +97,15 @@ func Check(commit string) ([]byte, error) {
 		fmt.Sprintf("%s^..%s", commit, commit),
 	}
 	if excludeEnvList := os.Getenv("GIT_CHECK_EXCLUDE"); excludeEnvList != "" {
-		excludeList := strings.Split(excludeEnvList, ":")
-		for _, exclude := range excludeList {
-			args = append(args, "--", ".", fmt.Sprintf(":(exclude)%s", exclude))
+		gitNewEnough, err := gitVersionNewerThan(versionWithExcludes)
+		if err != nil {
+			return nil, err
+		}
+		if gitNewEnough {
+			excludeList := strings.Split(excludeEnvList, ":")
+			for _, exclude := range excludeList {
+				args = append(args, "--", ".", fmt.Sprintf(":(exclude)%s", exclude))
+			}
 		}
 	}
 	cmd := exec.Command("git", args...)
