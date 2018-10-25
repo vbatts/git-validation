@@ -9,7 +9,7 @@ go:
 sudo: false
 
 before_install:
-  - go get -u github.com/golang/lint/golint
+  - go get -u golang.org/x/lint/golint
   - mkdir -p $GOPATH/src/github.com/vbatts && ln -sf $(pwd) $GOPATH/src/github.com/vbatts/git-validation && go get ./...
 
 before_script:
