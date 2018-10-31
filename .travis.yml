@@ -1,25 +1,39 @@
 language: go
+
+go_import_path: github.com/vbatts/git-validation
+
 go:
-  - tip
-  - 1.x
-  - 1.8.x
-  - 1.7.x
-  - 1.6.x
+  - "tip"
+  - "1.x"
+  - "1.11.x"
+  - "1.10.x"
+  - "1.9.x"
+  - "1.8.x"
+  - "1.7.x"
+
+env:
+
+matrix:
 
 sudo: false
 
-before_install:
-  - go get -u golang.org/x/lint/golint
-  - mkdir -p $GOPATH/src/github.com/vbatts && ln -sf $(pwd) $GOPATH/src/github.com/vbatts/git-validation && go get ./...
+install: true
+
+notifications:
+  email:
+    on_success: change
+    on_failure: always
 
 before_script:
   - env
 
-install: true
+before_install:
+  - go get ./...
+  - if [[ "$(go version |awk '{ print $3 }')" =~ ^go1\.11\. ]] ; then go get -u golang.org/x/lint/golint ; fi
 
 script:
+  - if [[ "$(go version |awk '{ print $3 }')" =~ ^go1\.11\. ]] ; then golint -set_exit_status ./... ; fi
   - go vet -x ./...
-  - golint -set_exit_status ./...
   - go build .
   - go test -v ./...
   - ./git-validation -run DCO,short-subject,dangling-whitespace -v
