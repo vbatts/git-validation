@@ -11,6 +11,7 @@ import (
 // Commits returns a set of commits.
 // If commitrange is a git still range 12345...54321, then it will be isolated set of commits.
 // If commitrange is a single commit, all ancestor commits up through the hash provided.
+// If commitrange is an empty commit range, then nil is returned.
 func Commits(commitrange string) ([]CommitEntry, error) {
 	cmdArgs := []string{"git", "log", `--pretty=format:%H`, commitrange}
 	if debug() {
@@ -19,6 +20,9 @@ func Commits(commitrange string) ([]CommitEntry, error) {
 	output, err := exec.Command(cmdArgs[0], cmdArgs[1:]...).Output()
 	if err != nil {
 		return nil, err
+	}
+	if len(output) == 0 {
+		return nil, nil
 	}
 	commitHashes := strings.Split(strings.TrimSpace(string(output)), "\n")
 	commits := make([]CommitEntry, len(commitHashes))
