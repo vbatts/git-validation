@@ -1,0 +1,37 @@
+name: vet and build
+
+on:
+  pull_request:
+    branches_ignore: []
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go: ['1.13', '1.14', '1.15', '1.16']
+
+    name: Documentation and Linting
+    steps:
+
+      - uses: actions/checkout@v2
+        with:
+          path: go/src/github.com/vbatts/git-validation
+
+                               # commit for v1 release
+      - uses: actions/setup-go@0caeaed6fd66a828038c2da3c0f662a42862658f
+        with:
+          go-version: ${{ matrix.go }}
+
+      - name: vet and build
+        env:
+          GOPATH: /home/runner/work/git-validation/git-validation/go
+        run: |
+          set -x
+          export PATH=$GOPATH/bin:$PATH
+          cd go/src/github.com/vbatts/git-validation
+          go get ./...
+          go vet -x ./...
+          go build -v .
+          go test -v ./...
+          ./git-validation -run DCO,short-subject,dangling-whitespace -v -range ${GITHUB_SHA}..HEAD
