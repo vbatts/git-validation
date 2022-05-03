@@ -153,7 +153,8 @@ func LogCommit(commit string) (*CommitEntry, error) {
 			logrus.Errorf("[git] cmd: %q", strings.Join(cmd.Args, " "))
 			return nil, err
 		}
-		c[v] = strings.TrimSpace(string(out))
+		commitMessage := strings.ReplaceAll(string(out), "\r\n", "\n")
+		c[v] = strings.TrimSpace(commitMessage)
 	}
 
 	return &c, nil
