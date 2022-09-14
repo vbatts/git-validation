@@ -7,7 +7,7 @@ A way to do validation on git commits.
 ## install
 
 ```console
-vbatts@valse ~ (master) $ go get -u github.com/vbatts/git-validation
+vbatts@valse ~ (master) $ go install github.com/vbatts/git-validation@latest
 ```
 
 ## usage
