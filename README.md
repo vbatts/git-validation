@@ -6,14 +6,15 @@ A way to do validation on git commits.
 
 ## install
 
-```console
-vbatts@valse ~ (master) $ go install github.com/vbatts/git-validation@latest
+```shell
+go install github.com/vbatts/git-validation@latest
 ```
 
 ## usage
 
 The flags
-```console
+
+```shell
 vbatts@valse ~/src/vb/git-validation (master *) $ git-validation -h
 Usage of git-validation:
   -D    debug output
@@ -29,7 +30,8 @@ Usage of git-validation:
 ```
 
 The entire default rule set is run by default:
-```console
+
+```shell
 vbatts@valse ~/src/vb/git-validation (master) $ git-validation -list-rules
 "dangling-whitespace" -- checking the presence of dangling whitespaces on line endings
 "DCO" -- makes sure the commits are signed
@@ -38,7 +40,8 @@ vbatts@valse ~/src/vb/git-validation (master) $ git-validation -list-rules
 ```
 
 Or, specify comma-delimited rules to run:
-```console
+
+```shell
 vbatts@valse ~/src/vb/git-validation (master) $ git-validation -run DCO,short-subject
  * b243ca4 "README: adding install and usage" ... PASS
  * d614ccf "*: run tests in a runner" ... PASS
@@ -50,7 +53,8 @@ vbatts@valse ~/src/vb/git-validation (master) $ git-validation -run DCO,short-su
 ```
 
 Verbosity shows each rule's output:
-```console
+
+```shell
 vbatts@valse ~/src/vb/git-validation (master) $ git-validation -v
  * d614ccf "*: run tests in a runner" ... PASS
   - PASS - has a valid DCO
@@ -73,7 +77,8 @@ vbatts@valse ~/src/vb/git-validation (master) $ git-validation -v
 ```
 
 Here's a failure:
-```console
+
+```shell
 vbatts@valse ~/src/vb/git-validation (master) $ git-validation 
  * 49f51a8 "README: adding install and usage" ... FAIL
   - FAIL - does not have a valid DCO
@@ -89,12 +94,13 @@ vbatts@valse ~/src/vb/git-validation (master) $ echo $?
 ```
 
 Excluding paths that are out of the scope of your project:
-```console
+
+```shell
 vbatts@valse ~/src/vb/git-validation (master) $ GIT_CHECK_EXCLUDE="./vendor:./git/testdata" git-validation -q -run dangling-whitespace
 ...
 ```
-using the `GIT_CHECK_EXCLUDE` environment variable. Multiple paths should be separated by colon(`:`)
 
+using the `GIT_CHECK_EXCLUDE` environment variable. Multiple paths should be separated by colon(`:`)
 
 ## Rules
 
@@ -104,4 +110,3 @@ See [`./rules/`](./rules/).
 Feel free to contribute more.
 
 Otherwise, by using `validate` package API directly, rules can be handed directly to the `validate.Runner`.
-
