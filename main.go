@@ -27,6 +27,10 @@ var (
 	flTravisPROnly = flag.Bool("travis-pr-only", true, "when on travis, only run validations if the CI-Build is checking pull-request build")
 )
 
+func init() {
+	logrus.SetOutput(os.Stderr)
+}
+
 func main() {
 	flag.Parse()
 
