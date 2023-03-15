@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        go: ['1.13', '1.14', '1.15', '1.16']
+        go: ['1.17', '1.18', '1.19', '1.20']
 
     name: Documentation and Linting
     steps:
@@ -30,9 +30,6 @@ jobs:
           set -x
           export PATH=$GOPATH/bin:$PATH
           cd go/src/github.com/vbatts/git-validation
-          go get ./...
-          go vet -x ./...
-          go build -v .
-          go test -v ./...
+          go run mage.go -v vet build test
           ./git-validation -run DCO,short-subject,dangling-whitespace -v
           ./git-validation -run DCO,short-subject,dangling-whitespace -v -range ${GITHUB_SHA}..HEAD
