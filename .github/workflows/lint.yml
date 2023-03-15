@@ -1,0 +1,33 @@
+name: lint
+
+on:
+  pull_request:
+    branches_ignore: []
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go: ['1.20']
+
+    name: Documentation and Linting
+    steps:
+
+      - uses: actions/checkout@v2
+        with:
+          path: go/src/github.com/vbatts/git-validation
+
+                               # commit for v1 release
+      - uses: actions/setup-go@0caeaed6fd66a828038c2da3c0f662a42862658f
+        with:
+          go-version: ${{ matrix.go }}
+
+      - name: lint
+        env:
+          GOPATH: /home/runner/work/git-validation/git-validation/go
+        run: |
+          set -x
+          export PATH=$GOPATH/bin:$PATH
+          cd go/src/github.com/vbatts/git-validation
+          go run mage.go -v lint

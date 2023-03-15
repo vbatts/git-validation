@@ -107,7 +107,7 @@ using the `GIT_CHECK_EXCLUDE` environment variable. Multiple paths should be sep
 When making a change, verify it with:
 
 ```shell
-go run mage.go vet build test
+go run mage.go lint vet build test
 ```
 
 ## Rules
