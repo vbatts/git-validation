@@ -3,10 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 	"os"
 	"strings"
 
+	"github.com/sirupsen/logrus"
 	_ "github.com/vbatts/git-validation/rules/danglingwhitespace"
 	_ "github.com/vbatts/git-validation/rules/dco"
 	_ "github.com/vbatts/git-validation/rules/messageregexp"
@@ -62,7 +62,7 @@ func main() {
 		rules = validate.FilterRules(validate.RegisteredRules, validate.SanitizeFilters(*flRun))
 	}
 	if os.Getenv("DEBUG") != "" {
-		log.Printf("%#v", rules) // XXX maybe reduce this list
+		logrus.Printf("%#v", rules) // XXX maybe reduce this list
 	}
 
 	var commitRange = *flCommitRange
@@ -80,13 +80,14 @@ func main() {
 		}
 	}
 
+	logrus.Infof("using commit range: %s", commitRange)
 	runner, err := validate.NewRunner(*flDir, rules, commitRange, *flVerbose)
 	if err != nil {
-		log.Fatal(err)
+		logrus.Fatal(err)
 	}
 
 	if err := runner.Run(); err != nil {
-		log.Fatal(err)
+		logrus.Fatal(err)
 	}
 	_, fail := runner.Results.PassFail()
 	if fail > 0 {
