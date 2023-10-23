@@ -57,7 +57,7 @@ func checkRevList(commitrange string) (string, error) {
 		// no issues, return now
 		return commitrange, nil
 	}
-	cmdArgs = []string{"git", "log", "--pretty=oneline"}
+	cmdArgs = []string{"git", "log", "--pretty=oneline", "--no-show-signature"}
 	if debug() {
 		logrus.Infof("[git] cmd: %q", strings.Join(cmdArgs, " "))
 	}
