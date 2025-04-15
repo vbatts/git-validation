@@ -41,7 +41,7 @@ func ValidateDCO(r validate.Rule, c git.CommitEntry) (vr validate.Result) {
 	}
 	if !hasValid {
 		vr.Pass = false
-		vr.Msg = "does not have a valid DCO"
+		vr.Msg = "does not have a valid Developer Certificate of Origin (DCO, https://developercertificate.org); run `git commit --amend --signoff` to sign DCO"
 	} else {
 		vr.Pass = true
 		vr.Msg = "has a valid DCO"
